@@ -15,12 +15,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Get repo name in lowercase
-      id: string
-      uses: ASzc/change-string-case-action@v5
-      with:
-        string: ${{ github.repository }}
-
     - name: Checkout code
       uses: actions/checkout@v2
 
