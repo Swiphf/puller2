@@ -1,4 +1,4 @@
-name: Publisher1 CI/CD
+name: Puller2 CI/CD
 
 env:
   HOST_PORT: 5001
