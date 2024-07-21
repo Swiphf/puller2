@@ -5,7 +5,7 @@ env:
   HOST_PORT: 5001
   CONTAINER_PORT: 5000
   LATEST_TAG: latest
-  NUMBERED_TAG: v0.0.${{ NUMBERED_TAG_PREFIX }}
+  NUMBERED_TAG: v0.0.${{ github.run_number }}
 
 on:
   push:
