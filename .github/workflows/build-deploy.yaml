@@ -16,12 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Output Run ID
-      run: echo ${{ github.run_id }}
-    - name: Output Run Number
-      run: echo ${{ github.run_number }} 
-    - name: Output Run Attempt
-      run: echo ${{ github.run_attempt }}
+
     - name: Checkout code
       uses: actions/checkout@v2
 
@@ -39,7 +34,10 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.APP }}:${{ env.TAG }}
+        tags: |
+          ${{ secrets.DOCKER_USERNAME }}/${{ env.APP }}:${{ env.TAG }}
+          ${{ secrets.DOCKER_USERNAME }}/${{ env.APP }}:${{ github.run_number }}
+        
 
   deploy:
     needs: build
