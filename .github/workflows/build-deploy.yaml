@@ -1,10 +1,11 @@
 name: Puller2 CI/CD
 
 env:
-  APP: "puller1"
+  APP: "puller2"
   HOST_PORT: 5001
   CONTAINER_PORT: 5000
-  TAG: latest
+  LATEST_TAG: latest
+  NUMBERED_TAG: v0.0.${{ NUMBERED_TAG_PREFIX }}
 
 on:
   push:
@@ -34,10 +35,9 @@ jobs:
         context: .
         push: true
         tags: |
-          ${{ secrets.DOCKER_USERNAME }}/${{ env.APP }}:${{ env.TAG }}
-          ${{ secrets.DOCKER_USERNAME }}/${{ env.APP }}:${{ github.run_number }}
+          ${{ secrets.DOCKER_USERNAME }}/${{ env.APP }}:${{ env.LATEST_TAG }}
+          ${{ secrets.DOCKER_USERNAME }}/${{ env.APP }}:${{ env.NUMBERED_TAG }}
         
-
   deploy:
     needs: build
     runs-on: ubuntu-latest
