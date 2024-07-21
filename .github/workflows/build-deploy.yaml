@@ -1,0 +1,51 @@
+name: Publisher1 CI/CD
+
+env:
+  HOST_PORT: 5000
+  CONTAINER_PORT: 5000
+  TAG: latest
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Get repo name in lowercase
+      id: string
+      uses: ASzc/change-string-case-action@v5
+      with:
+        string: ${{ github.repository }}
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Log in to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PAT }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/${{ steps.string.outputs.lowercase }}:${{ env.TAG }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy to Localstack
+      run: |
+        echo "I AM HERE 1"
+#        docker run --rm -d -p ${{ env.HOST_PORT }}:${{ env.CONTAINER_PORT }} ${{ secrets.DOCKER_USERNAME }}/${{ steps.string.outputs.lowercase }}:${{ env.TAG }}
