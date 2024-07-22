@@ -6,17 +6,15 @@ import os
 
 app = Flask(__name__)
 
-
 AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY', 'mock_access_key')
 AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY', 'mock_secret_key')
+REGION_NAME = os.getenv('REGION_NAME', 'eu-west-1')
+ENDPOINTS_URL = os.getenv('ENDPOINTS_URL', 'http://localstack:4566')
+QUEUE_URL = os.getenv('QUEUE_URL', 'http://localhost:4566/000000000000/my-queue')
+BUCKET_NAME = os.getenv('BUCKET_NAME', 'my_bucket')
 
-# Initialize SQS and S3 clients
-sqs = boto3.client('sqs', region_name='eu-west-1', endpoint_url='http://localhost:4566', aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
-s3 = boto3.client('s3', region_name='eu-west-1', endpoint_url='http://localhost:4566', aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
-
-# Your SQS queue URL and S3 bucket name
-QUEUE_URL = 'http://localhost:4566/000000000000/my-queue'
-BUCKET_NAME = 'my-bucket'
+sqs = boto3.client('sqs', region_name=REGION_NAME, endpoint_url=ENDPOINTS_URL, aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
+s3 = boto3.client('s3', region_name=REGION_NAME, endpoint_url=ENDPOINTS_URL, aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
 
 def process_sqs_messages():
     while True:
