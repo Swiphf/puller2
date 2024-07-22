@@ -38,6 +38,7 @@ def process_sqs_messages():
                     # Check if the data is directly in the message body or wrapped in a 'data' key
                     if 'data' in data:
                         data = data['data']
+                    
                     app.logger.debug(f'Parsed data: {data}')
                     
                     # Upload to S3
@@ -47,7 +48,6 @@ def process_sqs_messages():
                         Body=json.dumps(data)
                     )
                     app.logger.debug(f'Uploaded data to S3 with key: {data["email_timestream"]}.json')
-
                     # Delete message from SQS
                     sqs.delete_message(
                         QueueUrl=QUEUE_URL,
@@ -69,11 +69,15 @@ def process_sqs_messages():
                         ReceiptHandle=message['ReceiptHandle']
                     )
                     app.logger.debug('Deleted message from SQS')
+                except json.JSONDecodeError as e:
+                    app.logger.error(f'JSON decode error: {e}')
+                except KeyError as e:
+                    app.logger.error(f'Missing key in data: {e}')
                 except Exception as e:
                     app.logger.error(f'Error processing message: {e}')
         else:
             app.logger.debug('No messages found')
-            
+
 @app.route('/start', methods=['GET'])
 def start_processing():
     process_sqs_messages()
