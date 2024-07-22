@@ -37,13 +37,3 @@ jobs:
         tags: |
           ${{ secrets.DOCKER_USERNAME }}/${{ env.APP }}:${{ env.LATEST_TAG }}
           ${{ secrets.DOCKER_USERNAME }}/${{ env.APP }}:${{ env.NUMBERED_TAG }}
-        
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Deploy to Localstack
-      run: |
-        echo "I AM HERE 2"
-#        docker run --rm -d -p ${{ env.HOST_PORT }}:${{ env.CONTAINER_PORT }} ${{ secrets.DOCKER_USERNAME }}/${{ steps.string.outputs.lowercase }}:${{ env.TAG }}
