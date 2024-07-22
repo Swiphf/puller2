@@ -15,7 +15,6 @@ ENDPOINTS_URL = os.getenv('ENDPOINTS_URL', 'http://localstack:4566')
 QUEUE_URL = os.getenv('QUEUE_URL', 'http://localhost:4566/000000000000/my-queue')
 BUCKET_NAME = os.getenv('BUCKET_NAME', 'my_bucket')
 
-# Initialize clients
 sqs = boto3.client('sqs', region_name=REGION_NAME, endpoint_url=ENDPOINTS_URL, aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
 s3 = boto3.client('s3', region_name=REGION_NAME, endpoint_url=ENDPOINTS_URL, aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
 
