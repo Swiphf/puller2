@@ -1,12 +1,11 @@
-from flask import Flask
 import boto3
-import time
 import json
 import os
 import logging
+import time
 
-app = Flask(__name__)
-app.logger.setLevel(logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger()
 
 AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY', 'mock_access_key')
 AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY', 'mock_secret_key')
@@ -19,21 +18,21 @@ sqs = boto3.client('sqs', region_name=REGION_NAME, endpoint_url=ENDPOINTS_URL, a
 s3 = boto3.client('s3', region_name=REGION_NAME, endpoint_url=ENDPOINTS_URL, aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
 
 def process_sqs_messages():
-    app.logger.debug('Starting to process SQS messages')
+    logger.debug('Starting to process SQS messages')
     while True:
         response = sqs.receive_message(
             QueueUrl=QUEUE_URL,
             MaxNumberOfMessages=1,
             WaitTimeSeconds=10
         )
-        app.logger.debug(f'Received response: {response}')
+        logger.debug(f'Received response: {response}')
         
         if 'Messages' in response:
             for message in response['Messages']:
-                app.logger.debug(f'Message body: {message["Body"]}')
+                logger.debug(f'Message body: {message["Body"]}')
                 try:
                     data = json.loads(message['Body'])
-                    app.logger.debug(f'Parsed data: {data}')
+                    logger.debug(f'Parsed data: {data}')
                     
                     # Upload to S3
                     s3.put_object(
@@ -41,27 +40,23 @@ def process_sqs_messages():
                         Key=f"{data['email_timestream']}.json",
                         Body=json.dumps(data)
                     )
-                    app.logger.debug(f'Uploaded data to S3 with key: {data["email_timestream"]}.json')
+                    logger.debug(f'Uploaded data to S3 with key: {data["email_timestream"]}.json')
 
                     # Delete message from SQS
                     sqs.delete_message(
                         QueueUrl=QUEUE_URL,
                         ReceiptHandle=message['ReceiptHandle']
                     )
-                    app.logger.debug('Deleted message from SQS')
+                    logger.debug('Deleted message from SQS')
                 except json.JSONDecodeError as e:
-                    app.logger.error(f'JSON decode error: {e}')
+                    logger.error(f'JSON decode error: {e}')
                 except KeyError as e:
-                    app.logger.error(f'Missing key in data: {e}')
+                    logger.error(f'Missing key in data: {e}')
                 except Exception as e:
-                    app.logger.error(f'Error processing message: {e}')
+                    logger.error(f'Error processing message: {e}')
         else:
-            app.logger.debug('No messages found')
-
-@app.route('/start', methods=['GET'])
-def start_processing():
-    process_sqs_messages()
-    return "Started processing SQS messages", 200
+            logger.debug('No messages found')
+        time.sleep(10)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    process_sqs_messages()
