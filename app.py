@@ -38,7 +38,7 @@ def process_sqs_messages():
                     # Upload to S3
                     s3.put_object(
                         Bucket=BUCKET_NAME,
-                        Key=f"{data['data']['email_timestream']}.json",
+                        Key=f"{data['email_timestream']}.json",
                         Body=json.dumps(data)
                     )
                     app.logger.debug(f'Uploaded data to S3 with key: {data["email_timestream"]}.json')
