@@ -17,9 +17,22 @@ BUCKET_NAME = os.getenv('BUCKET_NAME', 'my_bucket')
 sqs = boto3.client('sqs', region_name=REGION_NAME, endpoint_url=ENDPOINTS_URL, aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
 s3 = boto3.client('s3', region_name=REGION_NAME, endpoint_url=ENDPOINTS_URL, aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
 
+def check_queue_exists():
+    try:
+        sqs.get_queue_attributes(QueueUrl=QUEUE_URL, AttributeNames=['All'])
+        return True
+    except sqs.exceptions.QueueDoesNotExist:
+        logger.error('Queue does not exist.')
+        return False
+
 def process_sqs_messages():
     logger.debug('Starting to process SQS messages')
     while True:
+        if not check_queue_exists():
+            logger.debug('Retrying in 10 seconds...')
+            time.sleep(10)
+            continue
+            
         response = sqs.receive_message(
             QueueUrl=QUEUE_URL,
             MaxNumberOfMessages=1,
