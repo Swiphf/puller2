@@ -41,7 +41,7 @@ def process_sqs_messages():
                         Key=f"{data['data']['email_timestream']}.json",
                         Body=json.dumps(data)
                     )
-                    app.logger.debug(f'Uploaded data to S3 with key: {data["data"]["email_timestream"]}.json')
+                    app.logger.debug(f'Uploaded data to S3 with key: {data["email_timestream"]}.json')
 
                     # Delete message from SQS
                     sqs.delete_message(
