@@ -3,8 +3,10 @@ import boto3
 import time
 import json
 import os
+import logging
 
 app = Flask(__name__)
+app.logger.setLevel(logging.DEBUG)
 
 AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY', 'mock_access_key')
 AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY', 'mock_secret_key')
