@@ -38,7 +38,6 @@ def process_sqs_messages():
                     # Check if the data is directly in the message body or wrapped in a 'data' key
                     if 'data' in data:
                         data = data['data']
-                    
                     app.logger.debug(f'Parsed data: {data}')
                     
                     # Upload to S3
@@ -64,6 +63,17 @@ def process_sqs_messages():
         else:
             app.logger.debug('No messages found')
 
+                    # Delete message from SQS
+                    sqs.delete_message(
+                        QueueUrl=QUEUE_URL,
+                        ReceiptHandle=message['ReceiptHandle']
+                    )
+                    app.logger.debug('Deleted message from SQS')
+                except Exception as e:
+                    app.logger.error(f'Error processing message: {e}')
+        else:
+            app.logger.debug('No messages found')
+            
 @app.route('/start', methods=['GET'])
 def start_processing():
     process_sqs_messages()
