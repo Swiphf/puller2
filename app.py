@@ -5,9 +5,13 @@ import json
 
 app = Flask(__name__)
 
+
+AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY', 'mock_access_key')
+AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY', 'mock_secret_key')
+
 # Initialize SQS and S3 clients
-sqs = boto3.client('sqs', region_name='eu-west-1', endpoint_url='http://localhost:4566', aws_access_key_id='mock_access_key', aws_secret_access_key='mock_secret_key')
-s3 = boto3.client('s3', region_name='eu-west-1', endpoint_url='http://localhost:4566', aws_access_key_id='mock_access_key', aws_secret_access_key='mock_secret_key')
+sqs = boto3.client('sqs', region_name='eu-west-1', endpoint_url='http://localhost:4566', aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
+s3 = boto3.client('s3', region_name='eu-west-1', endpoint_url='http://localhost:4566', aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY)
 
 # Your SQS queue URL and S3 bucket name
 QUEUE_URL = 'http://localhost:4566/000000000000/my-queue'
