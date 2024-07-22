@@ -26,7 +26,10 @@ def process_sqs_messages():
 
         if 'Messages' in response:
             for message in response['Messages']:
-                data = json.loads(message['Body'])
+                body = message['Body'].replace('\n', '').replace('\r', '')
+                data = json.loads(body)                    
+                print(f"Processing message: {data}")
+                
                 # Upload the message to S3
                 s3.put_object(
                     Bucket=BUCKET_NAME,
