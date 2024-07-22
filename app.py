@@ -49,11 +49,15 @@ def process_sqs_messages():
                         ReceiptHandle=message['ReceiptHandle']
                     )
                     app.logger.debug('Deleted message from SQS')
+                except json.JSONDecodeError as e:
+                    app.logger.error(f'JSON decode error: {e}')
+                except KeyError as e:
+                    app.logger.error(f'Missing key in data: {e}')
                 except Exception as e:
                     app.logger.error(f'Error processing message: {e}')
         else:
             app.logger.debug('No messages found')
-            
+
 @app.route('/start', methods=['GET'])
 def start_processing():
     process_sqs_messages()
